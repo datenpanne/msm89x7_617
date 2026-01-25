@@ -54,69 +54,21 @@ static int malata_gama_wuxga_on(struct malata_gama_wuxga *ctx)
 	ctx->dsi->mode_flags |= MIPI_DSI_MODE_LPM;
 	msleep(24);
 
-	/*mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xb0, 0x00); //original source
+	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xb0, 0x00);
 	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xbf, 0x04);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xc0, 0x00);*/
-
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xb0, 0x01);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xc0, 0x48);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xc1, 0x48);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xc2, 0x47);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xc3, 0x47);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xc4, 0x46);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xc5, 0x46);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xc6, 0x45);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xc7, 0x45);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xc8, 0x64);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xc9, 0x64);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xca, 0x4f);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xcb, 0x4f);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xcc, 0x40);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xcd, 0x40);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xce, 0x66);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xcf, 0x66);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xd0, 0x4f);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xd1, 0x4f);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xd2, 0x41);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xd3, 0x41);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xd4, 0x48);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xd5, 0x48);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xd6, 0x47);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xd7, 0x47);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xd8, 0x46);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xd9, 0x46);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xda, 0x45);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xdb, 0x45);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xdc, 0x64);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xdd, 0x64);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xde, 0x4f);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xdf, 0x4f);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xe0, 0x40);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xe1, 0x40);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xe2, 0x66);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xe3, 0x66);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xe4, 0x4f);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xe5, 0x4f);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xe6, 0x41);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xe7, 0x41);
-	mipi_dsi_msleep(&dsi_ctx, 150);
+	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xc0, 0x00);
 
 	return dsi_ctx.accum_err;
 }
 
-/*static int malata_gama_wuxga_off(struct malata_gama_wuxga *ctx)
+static int malata_gama_wuxga_off(struct malata_gama_wuxga *ctx)
 {
 	struct mipi_dsi_multi_context dsi_ctx = { .dsi = ctx->dsi };
 
 	ctx->dsi->mode_flags &= ~MIPI_DSI_MODE_LPM;
 
-	mipi_dsi_dcs_set_display_off_multi(&dsi_ctx);
-	mipi_dsi_msleep(&dsi_ctx, 100);
-	mipi_dsi_dcs_enter_sleep_mode_multi(&dsi_ctx);
-	mipi_dsi_msleep(&dsi_ctx, 120);
-
 	return dsi_ctx.accum_err;
-}*/
+}
 
 static int malata_gama_wuxga_prepare(struct drm_panel *panel)
 {
@@ -157,15 +109,6 @@ static int malata_gama_wuxga_prepare(struct drm_panel *panel)
 
 static int malata_gama_wuxga_enable(struct drm_panel *panel)
 {
-	/*struct malata_gama_wuxga *ctx = to_malata_gama_wuxga(panel);
-	struct mipi_dsi_multi_context dsi_ctx = { .dsi = ctx->dsi };
-	//struct device *dev = &ctx->dsi->dev;
-
-	mipi_dsi_dcs_exit_sleep_mode_multi(&dsi_ctx);
-	mipi_dsi_msleep(&dsi_ctx, 120);
-	mipi_dsi_dcs_set_display_on_multi(&dsi_ctx);
-
-	usleep_range(1000, 2000);*/
 	msleep(120);
 
 	return 0;
@@ -174,9 +117,9 @@ static int malata_gama_wuxga_enable(struct drm_panel *panel)
 static int malata_gama_wuxga_unprepare(struct drm_panel *panel)
 {
 	struct malata_gama_wuxga *ctx = to_malata_gama_wuxga(panel);
-	//struct device *dev = &ctx->dsi->dev;
-	//int ret;
-/*
+	struct device *dev = &ctx->dsi->dev;
+	int ret;
+
 	ret = malata_gama_wuxga_off(ctx);
 	if (ret < 0)
 		dev_err(dev, "Failed to un-initialize panel: %d\n", ret);*/
@@ -281,7 +224,7 @@ static int malata_gama_wuxga_probe(struct mipi_dsi_device *dsi)
 
 	dsi->lanes = 4;
 	dsi->format = MIPI_DSI_FMT_RGB888;
-	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE;
+	dsi->mode_flags = MIPI_DSI_MODE_VIDEO;
 
 	ctx->panel.prepare_prev_first = true;
 
