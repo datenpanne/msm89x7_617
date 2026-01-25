@@ -84,7 +84,7 @@ static int malata_gama_wuxga_prepare(struct drm_panel *panel)
 
 	ret = mipi_dsi_dcs_nop(ctx->dsi);
 	if (ret < 0) {
-			dev_err(dev, "Failed to send NOP: %d\n", ret);
+		dev_err(dev, "Failed to send NOP: %d\n", ret);
 	}
 	usleep_range(1000, 2000);
 
@@ -121,9 +121,9 @@ static int malata_gama_wuxga_unprepare(struct drm_panel *panel)
 	int ret;
 
 	ret = malata_gama_wuxga_off(ctx);
-	if (ret < 0)
-		dev_err(dev, "Failed to un-initialize panel: %d\n", ret);*/
-
+	if (ret < 0) {
+		dev_err(dev, "Failed to un-initialize panel: %d\n", ret);
+	}
 	gpiod_set_value_cansleep(ctx->blen_gpio, 0);
 
 	gpiod_set_value_cansleep(ctx->enable_gpio, 0);
