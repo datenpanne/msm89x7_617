@@ -227,13 +227,13 @@
 	status = "okay";
 
 	ports {
-		port@1 {
-			reg = <1>;
+		port@0 {
+			reg = <0>;
 
-			csiphy1_ep: endpoint {
+			csiphy0_ep: endpoint {
 				clock-lanes = <7>;
-				data-lanes = <0 1>;
-				remote-endpoint = <&front_cam_ep>;
+				data-lanes = <0 1 2 3>;
+				remote-endpoint = <&rear_cam_ep>;
 			};
 		};
 	};
