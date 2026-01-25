@@ -13,8 +13,6 @@
 #include "pmi8950.dtsi"
 #include "msm8937-qdsp6.dtsi"
 
-/delete-node/ &qseecom_mem;
-
 / {
 	model = "P1061X Medion Malata";
 	compatible = "medion,malata", "qcom,msm8937";
@@ -222,63 +220,6 @@
 	};
 };
 
-&camss {
-	vdda-supply = <&pm8937_l2>;
-	status = "okay";
-
-	ports {
-		port@0 {
-			reg = <0>;
-
-			csiphy0_ep: endpoint {
-				clock-lanes = <7>;
-				data-lanes = <0 1 2 3>;
-				remote-endpoint = <&rear_cam_ep>;
-			};
-		};
-	};
-};
-
-&cci {
-	pinctrl-0 = <&cci0_default>;
-	pinctrl-names = "default";
-
-	status = "okay";
-};
-
-&cci_i2c0 {
-	camera-sensor@10 {
-		compatible = "ovti,ov8856";
-
-		reg = <0x10>;
-
-		clocks = <&gcc GCC_CAMSS_MCLK0_CLK>;
-		clock-frequency = <24000000>;
-
-		pinctrl-0 = <&cam_sensor_rear_default>, <&camss_mclk0_default>;
-		pinctrl-names = "default";
-
-		reset-gpios = <&tlmm 35 GPIO_ACTIVE_LOW>;
-
-		avdd-supply= <&pm8937_l22>;
-		dvdd-supply = <&pm8937_l23>;
-		vio-supply = <&pm8937_l6>;
-		aux-supply = <&pm8937_l17>;
-
-		//orientation = <1>;
-		//rotation = <270>;
-
-		port {
-			rear_cam_ep: endpoint {
-				data-lanes = <0 1 2 3>;
-				remote-endpoint = <&csiphy0_ep>;
-			};
-		};
-	};
-};
-
-
-
 &gpu {
 	status = "okay";
 };
@@ -368,31 +309,6 @@
 
 &pmi8950_fg {
 	monitored-battery = <&pmi8950_smbcharger>;
-	status = "okay";
-};
-
-&pmi8950_flash {
-	#address-cells = <1>;
-	#size-cells = <0>;
-	status = "okay";
-
-	led@0 {
-		reg = <0>;
-		function = LED_FUNCTION_FLASH;
-		color = <LED_COLOR_ID_WHITE>;
-		led-max-microamp = <200000>;
-		flash-max-microamp = <1000000>;
-		flash-max-timeout-us = <1280000>;
-	};
-};
-
-&pmi8950_haptics {
-	qcom,actuator-type = <HAP_TYPE_ERM>;
-	qcom,brake-pattern = <0x3 0x3 0x0 0x0>;
-	qcom,wave-play-rate-us = <5263>;
-	qcom,wave-shape = <HAP_WAVE_SQUARE>;
-	qcom,vmax-millivolt = <2600>;
-
 	status = "okay";
 };
 
@@ -553,13 +469,6 @@
 &tlmm {
 	gpio-reserved-ranges = <0 4>, <20 4>;
 
-	cam_sensor_rear_default: cam-sensor-rear-default-state {
-		pins = "gpio35", "gpio36";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-disable;
-	};
-
 	gpio_keys_default: gpio-keys-default-state {
 		pins = "gpio91";
 		function = "gpio";
@@ -677,8 +586,8 @@
 
 &usb {
 	dr_mode = "peripheral";
-	extcon = <&pmi8950_smbcharger>, <&usb_vbus>;
-	//extcon = <&usb_vbus>;
+	//extcon = <&pmi8950_smbcharger>, <&usb_vbus>;
+	extcon = <&usb_vbus>;
 	status = "okay";
 };
 
