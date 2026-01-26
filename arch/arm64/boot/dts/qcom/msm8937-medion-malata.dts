@@ -634,9 +634,8 @@
 &pm8937_mpps {
 	pwm_out: mpp4-state {
 		pins = "mpp4";
-		function = "pwm";
-		power-source = <PM8916_MPP_L5>;
-		//output-low;
-		//qcom,dtest = <1>;
+        	function = "digital";
+        	power-source = <3>;
+        	qcom,amux-sel = <5>;
 	};
 };
