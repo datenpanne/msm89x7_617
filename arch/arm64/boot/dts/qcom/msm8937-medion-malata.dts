@@ -57,7 +57,7 @@
 
 	backlight: backlight {
 		compatible = "pwm-backlight";
-		pwms = <&pm8937_pwm 3 100000>;
+		pwms = <&pm8937_pwm 0 100000>;
 
 		brightness-levels = <0 255>;
 		num-interpolated-steps = <255>;
