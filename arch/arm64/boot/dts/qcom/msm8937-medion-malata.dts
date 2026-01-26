@@ -307,7 +307,7 @@
 	};
 };
 
-&pmi8950_fg {
+/*&pmi8950_fg {
 	monitored-battery = <&pmi8950_smbcharger>;
 	status = "okay";
 };
@@ -315,7 +315,7 @@
 &pmi8950_smbcharger {
 	monitored-battery = <&battery>;
 	status = "okay";
-};
+};*/
 
 &rpm_requests {
 	regulators-0 {
@@ -586,8 +586,8 @@
 
 &usb {
 	dr_mode = "peripheral";
-	extcon = <&pmi8950_smbcharger>, <&usb_vbus>;
-	//extcon = <&usb_vbus>;
+	//extcon = <&pmi8950_smbcharger>, <&usb_vbus>;
+	extcon = <&usb_vbus>;
 	status = "okay";
 };
 
