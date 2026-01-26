@@ -620,7 +620,7 @@
 	};
 };*/
 
-&pm8937_mpp {
+&pm8937_mpps {
     pm8937_mpp4_backlight: mpp4-backlight-state {
         pins = "mpp4";
         function = "digital";      /* Entspricht qcom,mode = <0x01> */
