@@ -7,6 +7,7 @@
 #include <linux/gpio/consumer.h>
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
+#include <linux/regulator/consumer.h>
 
 #include <video/mipi_display.h>
 
@@ -18,9 +19,15 @@
 struct malata_gama_wuxga {
 	struct drm_panel panel;
 	struct mipi_dsi_device *dsi;
+	struct regulator_bulk_data *supplies;
 	struct gpio_desc *reset_gpio;
 	struct gpio_desc *enable_gpio;
 	struct gpio_desc *blen_gpio;
+};
+
+static const struct regulator_bulk_data malata_gama_wuxga_supplies[] = {
+	{ .supply = "vdd" },
+	{ .supply = "vddio" },
 };
 
 static inline
@@ -68,8 +75,17 @@ static int malata_gama_wuxga_prepare(struct drm_panel *panel)
 	struct device *dev = &ctx->dsi->dev;
 	int ret;
 
-	gpiod_set_value_cansleep(ctx->enable_gpio, 1);
-	usleep_range(100, 150);
+	ret = regulator_bulk_enable(ARRAY_SIZE(malata_gama_wuxga_supplies), ctx->supplies);
+	if (ret < 0) {
+		dev_err(dev, "Failed to enable regulators: %d\n", ret);
+		return ret;
+	}
+
+	ret = mipi_dsi_dcs_nop(ctx->dsi);
+	if (ret < 0) {
+		dev_err(dev, "Failed to send NOP: %d\n", ret);
+	}
+	usleep_range(1000, 2000);
 
 	malata_gama_wuxga_reset(ctx);
 
@@ -80,8 +96,19 @@ static int malata_gama_wuxga_prepare(struct drm_panel *panel)
 	if (ret < 0) {
 		dev_err(dev, "Failed to initialize panel: %d\n", ret);
 		gpiod_set_value_cansleep(ctx->reset_gpio, 1);
+		regulator_bulk_disable(ARRAY_SIZE(malata_gama_wuxga_supplies), ctx->supplies);
 		return ret;
 	}
+
+	return 0;
+}
+
+static int malata_gama_wuxga_enable(struct drm_panel *panel)
+{
+	struct malata_gama_wuxga *ctx = to_malata_gama_wuxga(panel);
+
+	gpiod_set_value_cansleep(ctx->enable_gpio, 1);
+	usleep_range(100, 150);
 
 	return 0;
 }
@@ -96,13 +123,24 @@ static int malata_gama_wuxga_unprepare(struct drm_panel *panel)
 	if (ret < 0) {
 		dev_err(dev, "Failed to un-initialize panel: %d\n", ret);
 	}
-	gpiod_set_value_cansleep(ctx->blen_gpio, 0);
 
-	gpiod_set_value_cansleep(ctx->enable_gpio, 0);
-	usleep_range(100, 150);
+	gpiod_set_value_cansleep(ctx->blen_gpio, 0);
 
 	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
 	usleep_range(1000, 3000);
+
+	regulator_bulk_disable(ARRAY_SIZE(malata_gama_wuxga_supplies), ctx->supplies);
+	usleep_range(1000, 2000);
+
+	return 0;
+}
+
+static int malata_gama_wuxga_disable(struct drm_panel *panel)
+{
+	struct malata_gama_wuxga *ctx = to_malata_gama_wuxga(panel);
+
+	gpiod_set_value_cansleep(ctx->enable_gpio, 0);
+	usleep_range(100, 150);
 
 	return 0;
 }
@@ -130,6 +168,8 @@ static int malata_gama_wuxga_get_modes(struct drm_panel *panel,
 
 static const struct drm_panel_funcs malata_gama_wuxga_panel_funcs = {
 	.prepare = malata_gama_wuxga_prepare,
+	.enable = malata_gama_wuxga_enable,
+	.disable = malata_gama_wuxga_disable,
 	.unprepare = malata_gama_wuxga_unprepare,
 	.get_modes = malata_gama_wuxga_get_modes,
 };
@@ -146,17 +186,19 @@ static int malata_gama_wuxga_probe(struct mipi_dsi_device *dsi)
 	if (IS_ERR(ctx))
 		return PTR_ERR(ctx);
 
-	ctx->reset_gpio = devm_gpiod_get(dev, "reset", GPIOD_OUT_HIGH);
-	if (IS_ERR(ctx->reset_gpio))
-		return dev_err_probe(dev, PTR_ERR(ctx->reset_gpio),
-				     "Failed to get reset-gpios\n");
+	ret = devm_regulator_bulk_get_const(dev,
+					    ARRAY_SIZE(malata_gama_wuxga_supplies),
+					    malata_gama_wuxga_supplies,
+					    &ctx->supplies);
+	if (ret < 0)
+		return ret;
 
 	ctx->blen_gpio = devm_gpiod_get(dev, "blen", GPIOD_OUT_LOW);
 	if (IS_ERR(ctx->blen_gpio))
 		return dev_err_probe(dev, PTR_ERR(ctx->blen_gpio),
 				     "Failed to get backlight-enable-gpios\n");
 
-	ctx->enable_gpio = devm_gpiod_get(dev, "enable", GPIOD_OUT_HIGH);
+	ctx->enable_gpio = devm_gpiod_get(dev, "enable", GPIOD_OUT_LOW);
 	if (IS_ERR(ctx->enable_gpio))
 		return dev_err_probe(dev, PTR_ERR(ctx->enable_gpio),
 				     "Failed to get enable-gpios\n");
