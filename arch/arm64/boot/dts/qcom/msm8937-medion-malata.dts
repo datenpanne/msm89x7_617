@@ -256,6 +256,7 @@
 
 &modem {
 	pll-supply = <&pm8937_l7>;
+
 	status = "okay";
 };
 
@@ -265,9 +266,10 @@
 };
 
 &pm8937_pwm {
-	status = "okay";
 	pinctrl-names = "default";
-	pinctrl-0 = <&pwm_out>;
+	pinctrl-0 = <&pm8937_mpp4_backlight>;
+
+	status = "okay";
 };
 
 &pm8937_resin {
@@ -609,11 +611,20 @@
 	clock-frequency = <19200000>;
 };
 
-&pm8937_mpps {
+/*&pm8937_mpps {
 	pwm_out: mpp4-state {
 		pins = "mpp4";
-        	function = "digital";
-        	power-source = <3>;
-        	qcom,amux-sel = <5>;
+		function = "digital"
+        	//function = "dtest2"; //qcom,src-sel = <0x05>;
+        	power-source = <3>; //PM8916_MPP_L5
 	};
+};*/
+
+&pm8937_mpp {
+    pm8937_mpp4_backlight: mpp4-backlight-state {
+        pins = "mpp4";
+        function = "digital";      /* Entspricht qcom,mode = <0x01> */
+        output-low;                /* Grundzustand */
+        power-source = <PM8916_MPP_L5>;        /* Entspricht qcom,vin-sel (3 = L5) */
+    };
 };
