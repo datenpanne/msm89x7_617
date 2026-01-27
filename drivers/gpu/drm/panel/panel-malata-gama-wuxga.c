@@ -59,7 +59,7 @@ static int malata_gama_wuxga_on(struct malata_gama_wuxga *ctx)
 	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xbf, 0x04);
 	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xc0, 0x00);
 	mipi_dsi_dcs_exit_sleep_mode_multi(&dsi_ctx);
-	mipi_dsi_msleep(&ctx, 120);
+	mipi_dsi_msleep(&dsi_ctx, 120);
 	mipi_dsi_dcs_set_display_on_multi(&dsi_ctx);
 	mipi_dsi_msleep(&dsi_ctx, 80);
 
@@ -83,6 +83,7 @@ static int malata_gama_wuxga_off(struct malata_gama_wuxga *ctx)
 static int malata_gama_wuxga_prepare(struct drm_panel *panel)
 {
 	struct malata_gama_wuxga *ctx = to_malata_gama_wuxga(panel);
+	struct mipi_dsi_multi_context dsi_ctx = { .dsi = ctx->dsi };
 	struct device *dev = &ctx->dsi->dev;
 	int ret;
 
@@ -110,7 +111,7 @@ static int malata_gama_wuxga_prepare(struct drm_panel *panel)
 		regulator_bulk_disable(ARRAY_SIZE(malata_gama_wuxga_supplies), ctx->supplies);
 		return ret;
 	}
-	mipi_dsi_msleep(&ctx, 150);
+	mipi_dsi_msleep(&dsi_ctx, 150);
 	
 	return 0;
 }
