@@ -60,11 +60,8 @@
 		pwms = <&pm8937_pwm 0 100000>;
 
 		brightness-levels = <0 255>;
-		default-brightness-level = <128>;
-		//enable-gpios = <&tlmm 132 GPIO_ACTIVE_HIGH>;
-
-		//pinctrl-0 = <&lcd_bl_en_default>;
-		//pinctrl-names = "default";
+		num-interpolated-steps = <255>;
+		default-brightness-level = <64>;
 	};
 
 	battery: battery {

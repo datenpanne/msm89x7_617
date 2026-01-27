@@ -26,8 +26,8 @@ struct malata_gama_wuxga {
 };
 
 static const struct regulator_bulk_data malata_gama_wuxga_supplies[] = {
-	{ .supply = "vdd" },
 	{ .supply = "vddio" },
+	{ .supply = "vdd" },
 };
 
 static inline
@@ -53,9 +53,15 @@ static int malata_gama_wuxga_on(struct malata_gama_wuxga *ctx)
 
 	ctx->dsi->mode_flags |= MIPI_DSI_MODE_LPM;
 
+	msleep(24);
+
 	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xb0, 0x00);
 	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xbf, 0x04);
 	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xc0, 0x00);
+	mipi_dsi_dcs_exit_sleep_mode_multi(&dsi_ctx);
+	mipi_dsi_msleep(&ctx, 120);
+	mipi_dsi_dcs_set_display_on_multi(&dsi_ctx);
+	mipi_dsi_msleep(&dsi_ctx, 80);
 
 	return dsi_ctx.accum_err;
 }
@@ -65,6 +71,11 @@ static int malata_gama_wuxga_off(struct malata_gama_wuxga *ctx)
 	struct mipi_dsi_multi_context dsi_ctx = { .dsi = ctx->dsi };
 
 	ctx->dsi->mode_flags &= ~MIPI_DSI_MODE_LPM;
+
+	mipi_dsi_dcs_set_display_off_multi(&dsi_ctx);
+	mipi_dsi_msleep(&dsi_ctx, 100);
+	mipi_dsi_dcs_enter_sleep_mode_multi(&dsi_ctx);
+	mipi_dsi_msleep(&dsi_ctx, 120);
 
 	return dsi_ctx.accum_err;
 }
@@ -81,16 +92,16 @@ static int malata_gama_wuxga_prepare(struct drm_panel *panel)
 		return ret;
 	}
 
-	ret = mipi_dsi_dcs_nop(ctx->dsi);
+	gpiod_set_value_cansleep(ctx->enable_gpio, 1);
+	usleep_range(100, 150);
+
+	/*ret = mipi_dsi_dcs_nop(ctx->dsi);
 	if (ret < 0) {
 		dev_err(dev, "Failed to send NOP: %d\n", ret);
 	}
-	usleep_range(1000, 2000);
+	usleep_range(1000, 2000);*/
 
 	malata_gama_wuxga_reset(ctx);
-
-	gpiod_set_value(ctx->blen_gpio, 1);
-	usleep_range(100, 150);
 
 	ret = malata_gama_wuxga_on(ctx);
 	if (ret < 0) {
@@ -99,7 +110,8 @@ static int malata_gama_wuxga_prepare(struct drm_panel *panel)
 		regulator_bulk_disable(ARRAY_SIZE(malata_gama_wuxga_supplies), ctx->supplies);
 		return ret;
 	}
-
+	mipi_dsi_msleep(&ctx, 150);
+	
 	return 0;
 }
 
@@ -107,13 +119,28 @@ static int malata_gama_wuxga_enable(struct drm_panel *panel)
 {
 	struct malata_gama_wuxga *ctx = to_malata_gama_wuxga(panel);
 
-	gpiod_set_value_cansleep(ctx->enable_gpio, 1);
+	gpiod_set_value(ctx->blen_gpio, 1);
 	usleep_range(100, 150);
 
 	return 0;
 }
 
 static int malata_gama_wuxga_unprepare(struct drm_panel *panel)
+{
+	struct malata_gama_wuxga *ctx = to_malata_gama_wuxga(panel);
+
+	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
+	usleep_range(1000, 3000);
+
+	gpiod_set_value_cansleep(ctx->enable_gpio, 0);
+
+	regulator_bulk_disable(ARRAY_SIZE(malata_gama_wuxga_supplies), ctx->supplies);
+	usleep_range(1000, 2000);
+
+	return 0;
+}
+
+static int malata_gama_wuxga_disable(struct drm_panel *panel)
 {
 	struct malata_gama_wuxga *ctx = to_malata_gama_wuxga(panel);
 	struct device *dev = &ctx->dsi->dev;
@@ -125,22 +152,7 @@ static int malata_gama_wuxga_unprepare(struct drm_panel *panel)
 	}
 
 	gpiod_set_value_cansleep(ctx->blen_gpio, 0);
-
-	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
-	usleep_range(1000, 3000);
-
-	regulator_bulk_disable(ARRAY_SIZE(malata_gama_wuxga_supplies), ctx->supplies);
 	usleep_range(1000, 2000);
-
-	return 0;
-}
-
-static int malata_gama_wuxga_disable(struct drm_panel *panel)
-{
-	struct malata_gama_wuxga *ctx = to_malata_gama_wuxga(panel);
-
-	gpiod_set_value_cansleep(ctx->enable_gpio, 0);
-	usleep_range(100, 150);
 
 	return 0;
 }
