@@ -184,8 +184,8 @@
 		compatible = "goodix,gt9271";
 		reg = <0x5d>;
 
-		interrupt-parent = <&tlmm>;
-		interrupts = <41 IRQ_TYPE_EDGE_FALLING>;
+		//interrupt-parent = <&tlmm>;
+		interrupts-extended = <41 IRQ_TYPE_EDGE_FALLING>;
 		irq-gpios = <&tlmm 41 GPIO_ACTIVE_HIGH>;
 		reset-gpios = <&tlmm 40 GPIO_ACTIVE_LOW>;
 
@@ -193,7 +193,7 @@
 		VDDIO-supply = <&pm8937_l6>;
 
 		pinctrl-names = "default";
-		pinctrl-0 = <&touch_pin_default &touch_irq_default>;
+		pinctrl-0 = <&touch_rst_default &touch_irq_default>;
 
 		touchscreen-size-x = <1200>;
 		touchscreen-size-y = <1920>;
@@ -545,14 +545,15 @@
 		pins = "gpio41";
 		function = "gpio";
 		drive-strength = <2>;
-		bias-pull-up;
+		input-enable;
+		bias-disable;
 	};
 
-	touch_pin_default: touch-pin-default-state {
+	touch_rst_default: touch-rst-default-state {
 		pins = "gpio40";
 		function = "gpio";
 		drive-strength = <2>;
-		bias-disable;
+		output-low;
 	};
 
 /*	usb_id_default: usb-id-default {
