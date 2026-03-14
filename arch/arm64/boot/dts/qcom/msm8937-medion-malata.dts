@@ -164,13 +164,46 @@
 		status = "ok";
 	};
 };*/
+&blsp1_i2c2 {
+	pericom_typec: typec-controller@3d {
+		compatible = "pericom,usb-type-c";
+		reg = <0x3d>;
+
+		vddio-supply = <&pm8937_l5>; 
+		enable-gpios = <&tlmm 131 GPIO_ACTIVE_HIGH>;
+
+		status = "okay";
+		};
+	};
+};
 
 &blsp1_i2c3 {
 	status = "okay";
 
-	touchscreen@5d { //fertig
+	touchscreen@5d {
 		compatible = "goodix,gt9271";
 		reg = <0x5d>;
+
+		interrupt-parent = <&tlmm>;
+		interrupts = <41 IRQ_TYPE_EDGE_FALLING>;
+		irq-gpios = <&tlmm 41 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&tlmm 40 GPIO_ACTIVE_LOW>;
+
+		AVDD28-supply = <&pm8937_l17>;
+		VDDIO-supply = <&pm8937_l6>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&touch_pin_default &touch_irq_default>;
+
+		touchscreen-size-x = <1200>;
+		touchscreen-size-y = <1920>;
+		touchscreen-inverted-x;
+		touchscreen-swapped-x-y;
+	};
+		
+	/*touchscreen@5d { //fertig
+		compatible = "goodix,gt9271";
+		reg = <0x5d>;*/
 
 		/*interrupt-parent = <&tlmm>;
 		interrupts = <41 IRQ_TYPE_EDGE_FALLING>;
@@ -178,7 +211,7 @@
 		reset-gpios = <&tlmm 40 GPIO_ACTIVE_LOW>;
 		interrupts-extended  = <&tlmm 41 IRQ_TYPE_EDGE_FALLING>;*/
 		
-		interrupt-parent = <&tlmm>;
+		/*interrupt-parent = <&tlmm>;
 		interrupts = <41 IRQ_TYPE_EDGE_FALLING>;
 
 		reset-gpios = <&tlmm 40 GPIO_ACTIVE_LOW>;
@@ -194,7 +227,7 @@
 
 		touchscreen-inverted-x;
 		touchscreen-swapped-x-y;
-	};
+	};*/
 };
 /*
 &gpu {
@@ -508,8 +541,15 @@
 		output-low;
 	};
 
-	touch_pins_default: touch-pins-default-state {
-		pins = "gpio40","gpio41";
+	touch_irq_default: touch-irq-default-state {
+		pins = "gpio41";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-up;
+	};
+
+	touch_pin_default: touch-pin-default-state {
+		pins = "gpio40";
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
