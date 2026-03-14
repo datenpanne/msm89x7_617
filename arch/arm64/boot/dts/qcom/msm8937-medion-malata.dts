@@ -163,8 +163,8 @@
 		pinctrl-0 = <0xc3>;
 		status = "ok";
 	};
-};*/
-&blsp1_i2c2 {
+};
+&blsp1_i2c2 { // test!
 	pericom_typec: typec-controller@3d {
 		compatible = "pericom,usb-type-c";
 		reg = <0x3d>;
@@ -175,7 +175,7 @@
 		status = "okay";
 		};
 	};
-};
+};*/
 
 &blsp1_i2c3 {
 	status = "okay";
