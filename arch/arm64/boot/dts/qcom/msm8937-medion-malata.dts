@@ -99,8 +99,8 @@
 		enable-gpios = <&tlmm 85 GPIO_ACTIVE_HIGH>;
 
 		pinctrl-0 = <&speaker_amp_default>;
-		pinctrl-1 = <&speaker_amp_sleep>;
-		pinctrl-names = "default","sleep";
+		//pinctrl-1 = <&speaker_amp_sleep>;
+		pinctrl-names = "default";//,"sleep";
 
 		sound-name-prefix = "Speaker Amp";
 	};
@@ -224,9 +224,9 @@
 		Vdd-supply = <&pm8937_l17>;
 		power-gpio = <&tlmm 32 GPIO_ACTIVE_HIGH>;
 
-		pinctrl-names = "default","sleep";
+		pinctrl-names = "default";//,"sleep";
 		pinctrl-0 = <&headphones_switch_default>;
-		pinctrl-1 = <&headphones_switch_sleep>;
+		//pinctrl-1 = <&headphones_switch_sleep>;
 
 		sound-name-prefix = "Headphones";
 	};
@@ -486,7 +486,6 @@
 &sound {
 	model = "medion-malata";
 
-	aux-devs = <&speaker_amp>, <&headphones_switch>;
 	widgets =
 		"Speaker", "Speaker",
 		"Headphone", "Headphones";
@@ -506,22 +505,9 @@
 		"MM_DL4", "MultiMedia4 Playback",
 		"MultiMedia2 Capture", "MM_UL2";
 
+	aux-devs = <&speaker_amp>, <&headphones_switch>;
+	
 	status = "okay";
-
-	quaternary-mi2s-dai-link {
-		link-name = "Quaternary MI2S";
-		cpu {
-			sound-dai = <&q6afedai QUATERNARY_MI2S_RX>;
-		};
-
-		platform {
-			sound-dai = <&q6routing>;
-		};
-
-		codec {
-			sound-dai = <&lpass_codec>;
-		};
-	};
 };
 
 &tlmm {
@@ -538,15 +524,15 @@
 		pins = "gpio32";
 		function = "gpio";
 		drive-strength = <2>;
-		output-high;
+		bias-pull-up;
 	};
 
-	headphones_switch_sleep: headphones-switch-sleep-state {
+	/*headphones_switch_sleep: headphones-switch-sleep-state {
 		pins = "gpio32";
 		function = "gpio";
 		drive-strength = <2>;
 		output-low;
-	};
+	};*/
 
 	/*lcd_bl_en_default: lcd-bl-en-default-state {
 		pins = "gpio132","gpio24";
@@ -581,15 +567,16 @@
 		pins = "gpio85";
 		function = "gpio";
 		drive-strength = <2>;
-		output-high;
+		bias-disable;
+		//output-high;
 	};
 
-	speaker_amp_sleep: speaker-amp-sleep-state {
+	/*speaker_amp_sleep: speaker-amp-sleep-state {
 		pins = "gpio85";
 		function = "gpio";
 		drive-strength = <2>;
 		output-low;
-	};
+	};*/
 
 	touch_irq_default: touch-irq-default-state {
 		pins = "gpio41";
@@ -672,6 +659,7 @@
 
 &wcd_codec {
 	qcom,hphl-jack-type-normally-open;
+	qcom,micbias-lvl = <2800>;
 	qcom,mbhc-vthreshold-high = <75 225 450 510 540>;
 	qcom,mbhc-vthreshold-low = <25 200 325 500 530>;
 	qcom,micbias1-ext-cap;
