@@ -495,7 +495,7 @@
 		"Headphones Switch INR", "HPHR",
 		"AMIC1", "MIC BIAS External1",
 		"AMIC2", "MIC BIAS Internal2",
-		"AMIC3", "MIC BIAS External1",
+		"AMIC3", "MIC BIAS External1";
 
 	status = "okay";
 };
