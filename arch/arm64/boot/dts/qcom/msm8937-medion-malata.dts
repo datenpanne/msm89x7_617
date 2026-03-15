@@ -14,7 +14,7 @@
 #include "msm8937-qdsp6.dtsi"
 
 / {
-	model = "P1061X Medion Malata";
+	model = "Medion P1061X (Malata)";
 	compatible = "medion,malata", "qcom,msm8937";
 	chassis-type = "tablet";
 
@@ -208,6 +208,10 @@
 		touchscreen-inverted-y;
 		touchscreen-swapped-x-y;
 	};
+};
+
+&blsp1_uart2 {
+	status = "okay";
 };
 
 &blsp2_i2c1 {
@@ -450,13 +454,14 @@
 	};
 };
 
+/*
 &sdc2_cmd_default {
 	drive-strength = <12>;
 };
 
 &sdc2_data_default {
 	drive-strength = <12>;
-};
+};*/
 
 &sdhc_1 {
 	vmmc-supply = <&pm8937_l8>;
@@ -479,6 +484,9 @@
 };
 
 &sound {
+	pinctrl-0 = <&cdc_pdm_default &sec_mi2s_default>;
+	pinctrl-1 = <&cdc_pdm_sleep &sec_mi2s_sleep>;
+
 	model = "medion-malata";
 
 	aux-devs = <&speaker_amp>, <&headphones_switch>;
@@ -502,6 +510,21 @@
 		"MultiMedia2 Capture", "MM_UL2";
 
 	status = "okay";
+
+	quaternary-mi2s-dai-link {
+		link-name = "Quaternary MI2S";
+		cpu {
+			sound-dai = <&q6afedai QUATERNARY_MI2S_RX>;
+		};
+
+		platform {
+			sound-dai = <&q6routing>;
+		};
+
+		codec {
+			sound-dai = <&lpass_codec 3>, <&wcd_codec 3>;
+		};
+	};
 };
 
 &tlmm {
