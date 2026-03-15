@@ -99,7 +99,8 @@
 		enable-gpios = <&tlmm 85 GPIO_ACTIVE_HIGH>;
 
 		pinctrl-0 = <&speaker_amp_default>;
-		pinctrl-names = "default";
+		pinctrl-1 = <&speaker_amp_sleep>;
+		pinctrl-names = "default","sleep";
 
 		sound-name-prefix = "Speaker Amp";
 	};
@@ -204,8 +205,6 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&touch_rst_default &touch_irq_default>;
 
-		touchscreen-size-y = <1200>;
-		touchscreen-size-x = <1920>;
 		touchscreen-inverted-y;
 		touchscreen-swapped-x-y;
 	};
@@ -221,8 +220,9 @@
 		Vdd-supply = <&pm8937_l17>;
 		power-gpio = <&tlmm 32 GPIO_ACTIVE_HIGH>;
 
+		pinctrl-names = "default","sleep";
 		pinctrl-0 = <&headphones_switch_default>;
-		pinctrl-names = "default";
+		pinctrl-1 = <&headphones_switch_sleep>;
 
 		sound-name-prefix = "Headphones";
 	};
@@ -489,13 +489,17 @@
 	audio-routing =
 		"Speaker", "Speaker Amp OUT",
 		"Speaker Amp IN", "HPHR",
-		"Headphones", "Headphones Switch OUTL",
-		"Headphones", "Headphones Switch OUTR",
-		"Headphones Switch INL", "HPHL",
-		"Headphones Switch INR", "HPHR",
+		"Headphones", "Headphones OUTL",
+		"Headphones", "Headphones OUTR",
+		"Headphones INL", "HPHL",
+		"Headphones INR", "HPHR",
 		"AMIC1", "MIC BIAS External1",
 		"AMIC2", "MIC BIAS Internal2",
-		"AMIC3", "MIC BIAS External1";
+		"AMIC3", "MIC BIAS External1",
+		"MM_DL1", "MultiMedia1 Playback",
+		"MM_DL3", "MultiMedia3 Playback",
+		"MM_DL4", "MultiMedia4 Playback",
+		"MultiMedia2 Capture", "MM_UL2";
 
 	status = "okay";
 };
@@ -514,8 +518,14 @@
 		pins = "gpio32";
 		function = "gpio";
 		drive-strength = <2>;
-		bias-disable;
-		//output-high;
+		output-high;
+	};
+
+	headphones_switch_sleep: headphones-switch-sleep-state {
+		pins = "gpio32";
+		function = "gpio";
+		drive-strength = <2>;
+		output-low;
 	};
 
 	/*lcd_bl_en_default: lcd-bl-en-default-state {
@@ -551,8 +561,14 @@
 		pins = "gpio85";
 		function = "gpio";
 		drive-strength = <2>;
-		bias-disable;
-		//output-low;
+		output-high;
+	};
+
+	speaker_amp_sleep: speaker-amp-sleep-state {
+		pins = "gpio85";
+		function = "gpio";
+		drive-strength = <2>;
+		output-low;
 	};
 
 	touch_irq_default: touch-irq-default-state {
