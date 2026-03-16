@@ -294,6 +294,17 @@
 	status = "okay";
 };
 
+
+&pm8937_mpps {
+	pm8937_mpp4_backlight: mpp4-state {
+		pins = "mpp4";
+		function = "digital";      /* Entspricht qcom,mode = <0x01> */
+		power-source = <PM8916_MPP_L5>;        /* Entspricht qcom,vin-sel (3 = L5) */
+		output-low;
+		qcom,dtest = <1>;
+	};
+};
+
 &pm8937_pwm {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pm8937_mpp4_backlight>;
@@ -315,13 +326,13 @@
 		regulator-boot-on;
 	};
 };
-
+/*
 &pmi8950_fg {
 	monitored-battery = <&battery>;
 	//power-supplies = <&pmi8950_smbcharger>;
 	status = "okay";
 };
-/*
+
 &pmi8950_smbcharger {
 	monitored-battery = <&battery>;
 	status = "okay";
@@ -695,13 +706,3 @@
         	power-source = <PM8916_MPP_L5>; //3
 	};
 };*/
-
-&pm8937_mpps {
-	pm8937_mpp4_backlight: mpp4-backlight-state {
-		pins = "mpp4";
-		function = "digital";      /* Entspricht qcom,mode = <0x01> */
-		power-source = <PM8916_MPP_L5>;        /* Entspricht qcom,vin-sel (3 = L5) */
-		output-low;
-		qcom,dtest = <2>;
-	};
-};

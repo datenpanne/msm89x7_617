@@ -120,6 +120,7 @@ static int malata_gama_wuxga_enable(struct drm_panel *panel)
 {
 	struct malata_gama_wuxga *ctx = to_malata_gama_wuxga(panel);
 
+	msleep(20);
 	gpiod_set_value(ctx->blen_gpio, 1);
 	usleep_range(100, 150);
 
@@ -226,7 +227,7 @@ static int malata_gama_wuxga_probe(struct mipi_dsi_device *dsi)
 
 	dsi->lanes = 4;
 	dsi->format = MIPI_DSI_FMT_RGB888;
-	dsi->mode_flags = MIPI_DSI_MODE_VIDEO;
+	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST | MIPI_DSI_MODE_LPM;
 
 	ctx->panel.prepare_prev_first = true;
 
