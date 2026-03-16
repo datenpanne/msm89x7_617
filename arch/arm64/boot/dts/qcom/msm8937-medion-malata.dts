@@ -251,7 +251,7 @@
 	status = "okay";
 
 	panel@0 {
-		compatible = "medion,malata-panel";
+		compatible = "medion,malata-panel", "malata,gama-wuxga";
 		reg = <0>;
 		
 		vddio-supply = <&pm8937_l6>;
