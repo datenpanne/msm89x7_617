@@ -51,7 +51,7 @@
 				 <&gcc GCC_MDSS_PCLK0_CLK>,
 				 <&gcc GCC_MDSS_ESC0_CLK>;
 			power-domains = <&gcc MDSS_GDSC>;
-			status = "okay";
+			status = "disabled";
 		};
 	};
 
@@ -66,18 +66,11 @@
 
 	battery: battery {
 		compatible = "simple-battery";
-	 //TODO noch nicht komplett
+
 		charge-full-design-microamp-hours = <6849000>;
 		constant-charge-current-max-microamp = <1000000>;
 		voltage-min-design-microvolt = <3500000>;
 		voltage-max-design-microvolt = <4300000>;
-
-
-		/*energy-full-design-microwatt-hours = <11500000>; //??
-		constant-charge-voltage-max-microvolt = <4400000>;
-		precharge-current-microamp = <256000>;
-		charge-term-current-microamp = <60000>;*/
-
 	};
 
 	gpio-keys {
@@ -228,13 +221,13 @@
 		pinctrl-0 = <&headphones_switch_default>;
 		//pinctrl-1 = <&headphones_switch_sleep>;
 
-		sound-name-prefix = "Headphones";
+		sound-name-prefix = "Headphones Switch";
 	};
 };
-/*
+
 &gpu {
 	status = "okay";
-};*/
+};
 
 &lpass_codec {
 	status = "okay";
@@ -243,7 +236,7 @@
 &mba_mem {
 	status = "okay";
 };
-/*
+
 &mdss {
 	status = "okay";
 };
@@ -262,10 +255,10 @@
 		reg = <0>;
 		
 		vddio-supply = <&pm8937_l6>;
-		vdd-supply = <&pm8937_l6>;
+		vdd-supply = <&pm8937_l17>;
 		
 		enable-gpios = <&tlmm 24 GPIO_ACTIVE_HIGH>;
-		bklen-gpios = <&tlmm 132 GPIO_ACTIVE_HIGH>;
+		blen-gpios = <&tlmm 132 GPIO_ACTIVE_HIGH>;
 		
 		reset-gpios = <&tlmm 60 GPIO_ACTIVE_LOW>;
 
@@ -288,7 +281,7 @@
 	vddio-supply = <&pm8937_l6>;
 
 	status = "okay";
-};*/
+};
 
 &modem {
 	pll-supply = <&pm8937_l7>;
@@ -323,11 +316,12 @@
 	};
 };
 
-/*&pmi8950_fg {
-	monitored-battery = <&pmi8950_smbcharger>;
+&pmi8950_fg {
+	monitored-battery = <&battery>;
+	//power-supplies = <&pmi8950_smbcharger>;
 	status = "okay";
 };
-
+/*
 &pmi8950_smbcharger {
 	monitored-battery = <&battery>;
 	status = "okay";
@@ -491,12 +485,14 @@
 		"Headphone", "Headphones";
 	pin-switches = "Speaker", "Headphones";
 	audio-routing =
-		"Speaker", "Speaker Amp OUT",
-		"Speaker Amp IN", "HPHR",
-		"Headphones", "Headphones OUTL",
-		"Headphones", "Headphones OUTR",
-		"Headphones INL", "HPHL",
-		"Headphones INR", "HPHR",
+		"Speaker", "Speaker Amp OUTL",
+		"Speaker", "Speaker Amp OUTR",
+		"Speaker Amp INL", "HPHL",
+		"Speaker Amp INR", "HPHR",
+		"Headphones", "Headphones Switch OUTL",
+		"Headphones", "Headphones Switch OUTR",
+		"Headphones Switch INL", "HPHL",
+		"Headphones Switch INR", "HPHR",
 		"AMIC1", "MIC BIAS External1",
 		"AMIC2", "MIC BIAS Internal2",
 		"AMIC3", "MIC BIAS External1",
